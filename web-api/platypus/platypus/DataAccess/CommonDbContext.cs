@@ -276,6 +276,27 @@ namespace Nssol.Platypus.DataAccess
         }
 
         /// <summary>
+        /// DB 接続情報を定義している json ファイルを読み込み、その値を返却する。
+        /// json ファイルは Properties/launchSettings.json としている。
+        /// </summary>
+        /// <returns>DB 接続情報</returns>
+        public static string readDefaultConnection()
+        {
+            // Properties/launchSettings.json の読み込み
+            IConfigurationRoot launchSettingsConf = new ConfigurationBuilder()
+                .SetBasePath(Path.Combine(Directory.GetCurrentDirectory(), "Properties"))
+                .AddJsonFile("launchSettings.json", true, false) //念のため変更監視しない
+                .Build();
+            // DB 接続情報の取得
+            string defaultConnection = launchSettingsConf
+                .GetSection("profiles")
+                .GetSection("IIS Express")
+                .GetSection("environmentVariables")
+                ["ConnectionStrings__DefaultConnection"];
+            return defaultConnection;
+        }
+
+        /// <summary>
         /// DB 永続化（同期）
         /// </summary>
         /// <returns>変更数</returns>

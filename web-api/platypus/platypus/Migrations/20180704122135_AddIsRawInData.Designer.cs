@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Nssol.Platypus.DataAccess;
@@ -9,15 +10,47 @@ using Nssol.Platypus.DataAccess;
 namespace EFMigrationTool.Migrations
 {
     [DbContext(typeof(CommonDbContext))]
-    partial class CommonDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180704122135_AddIsRawInData")]
+    partial class AddIsRawInData
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn)
-                .HasAnnotation("ProductVersion", "2.1.4-rtm-31024")
+                .HasAnnotation("ProductVersion", "2.1.0-rtm-30799")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
+
+            modelBuilder.Entity("Nssol.Platypus.Models.ClusterToken", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime>("CreatedAt");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired();
+
+                    b.Property<string>("KubeToken")
+                        .IsRequired();
+
+                    b.Property<DateTime>("ModifiedAt");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsRequired();
+
+                    b.Property<long>("TenantId");
+
+                    b.Property<long>("UserId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TenantId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ClusterTokens");
+                });
 
             modelBuilder.Entity("Nssol.Platypus.Models.Git", b =>
                 {
@@ -32,13 +65,20 @@ namespace EFMigrationTool.Migrations
                     b.Property<string>("CreatedBy")
                         .IsRequired();
 
+                    b.Property<string>("GitType");
+
+                    b.Property<string>("Host");
+
                     b.Property<DateTime>("ModifiedAt");
 
                     b.Property<string>("ModifiedBy")
                         .IsRequired();
 
-                    b.Property<string>("Name")
-                        .IsRequired();
+                    b.Property<string>("Name");
+
+                    b.Property<int?>("PortNo");
+
+                    b.Property<string>("PrivateKey");
 
                     b.Property<string>("RepositoryUrl")
                         .IsRequired();
@@ -47,9 +87,54 @@ namespace EFMigrationTool.Migrations
 
                     b.Property<string>("Token");
 
+                    b.Property<string>("UserName");
+
                     b.HasKey("Id");
 
                     b.ToTable("Gits");
+                });
+
+            modelBuilder.Entity("Nssol.Platypus.Models.Menu", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Action");
+
+                    b.Property<string>("Controller");
+
+                    b.Property<DateTime>("CreatedAt");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired();
+
+                    b.Property<string>("Description");
+
+                    b.Property<string>("Locale")
+                        .IsRequired();
+
+                    b.Property<string>("MenuCode")
+                        .IsRequired();
+
+                    b.Property<DateTime>("ModifiedAt");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsRequired();
+
+                    b.Property<string>("Name")
+                        .IsRequired();
+
+                    b.Property<string>("ParentMenuCode")
+                        .IsRequired();
+
+                    b.Property<string>("ShowTopFlag");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MenuCode", "Locale")
+                        .IsUnique();
+
+                    b.ToTable("Menus");
                 });
 
             modelBuilder.Entity("Nssol.Platypus.Models.MenuRoleMap", b =>
@@ -75,9 +160,6 @@ namespace EFMigrationTool.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("RoleId");
-
-                    b.HasIndex("MenuCode", "RoleId")
-                        .IsUnique();
 
                     b.ToTable("MenuRoleMaps");
                 });
@@ -134,12 +216,35 @@ namespace EFMigrationTool.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("NodeId");
+
                     b.HasIndex("TenantId");
 
-                    b.HasIndex("NodeId", "TenantId")
-                        .IsUnique();
-
                     b.ToTable("NodeTenantMaps");
+                });
+
+            modelBuilder.Entity("Nssol.Platypus.Models.Port", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime>("CreatedAt");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired();
+
+                    b.Property<string>("Host");
+
+                    b.Property<DateTime>("ModifiedAt");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsRequired();
+
+                    b.Property<long>("No");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Ports");
                 });
 
             modelBuilder.Entity("Nssol.Platypus.Models.Registry", b =>
@@ -169,12 +274,14 @@ namespace EFMigrationTool.Migrations
 
                     b.Property<int>("PortNo");
 
-                    b.Property<string>("ProjectName");
+                    b.Property<string>("RegistryType");
 
                     b.Property<string>("RegistryUrl")
                         .IsRequired();
 
                     b.Property<int>("ServiceType");
+
+                    b.Property<string>("UserName");
 
                     b.HasKey("Id");
 
@@ -207,6 +314,9 @@ namespace EFMigrationTool.Migrations
                     b.Property<string>("Name")
                         .IsRequired();
 
+                    b.Property<string>("RoleType")
+                        .IsRequired();
+
                     b.Property<int>("SortOrder");
 
                     b.Property<long?>("TenantId");
@@ -218,12 +328,12 @@ namespace EFMigrationTool.Migrations
                     b.ToTable("Roles");
                 });
 
-            modelBuilder.Entity("Nssol.Platypus.Models.Setting", b =>
+            modelBuilder.Entity("Nssol.Platypus.Models.RoleDetail", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("ApiSecurityTokenPass")
+                    b.Property<string>("AssignType")
                         .IsRequired();
 
                     b.Property<DateTime>("CreatedAt");
@@ -231,32 +341,42 @@ namespace EFMigrationTool.Migrations
                     b.Property<string>("CreatedBy")
                         .IsRequired();
 
-                    b.Property<int>("EnsureSingleRow");
-
                     b.Property<DateTime>("ModifiedAt");
 
                     b.Property<string>("ModifiedBy")
                         .IsRequired();
 
+                    b.Property<long>("RoleId");
+
+                    b.Property<long?>("TenantId");
+
+                    b.Property<long?>("UserId");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("ApiSecurityTokenPass")
+                    b.HasIndex("TenantId");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("RoleId", "TenantId", "UserId")
                         .IsUnique();
 
-                    b.ToTable("Settings");
+                    b.ToTable("RoleDetails");
                 });
 
-            modelBuilder.Entity("Nssol.Platypus.Models.Storage", b =>
+            modelBuilder.Entity("Nssol.Platypus.Models.SystemMessage", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("AccessKey")
-                        .IsRequired();
+                    b.Property<string>("Body");
 
                     b.Property<DateTime>("CreatedAt");
 
                     b.Property<string>("CreatedBy")
+                        .IsRequired();
+
+                    b.Property<string>("Locale")
                         .IsRequired();
 
                     b.Property<DateTime>("ModifiedAt");
@@ -264,24 +384,20 @@ namespace EFMigrationTool.Migrations
                     b.Property<string>("ModifiedBy")
                         .IsRequired();
 
-                    b.Property<string>("Name")
+                    b.Property<DateTime>("NotifiedAt");
+
+                    b.Property<string>("SeqNum")
                         .IsRequired();
 
-                    b.Property<string>("NfsRoot")
-                        .IsRequired();
-
-                    b.Property<string>("NfsServer")
-                        .IsRequired();
-
-                    b.Property<string>("SecretKey")
-                        .IsRequired();
-
-                    b.Property<string>("ServerAddress")
+                    b.Property<string>("Subject")
                         .IsRequired();
 
                     b.HasKey("Id");
 
-                    b.ToTable("Storages");
+                    b.HasIndex("SeqNum", "Locale")
+                        .IsUnique();
+
+                    b.ToTable("SystemMessages");
                 });
 
             modelBuilder.Entity("Nssol.Platypus.Models.Tenant", b =>
@@ -294,14 +410,12 @@ namespace EFMigrationTool.Migrations
                     b.Property<string>("CreatedBy")
                         .IsRequired();
 
-                    b.Property<long?>("DefaultGitId")
-                        .IsRequired();
-
-                    b.Property<long?>("DefaultRegistryId")
-                        .IsRequired();
-
                     b.Property<string>("DisplayName")
                         .IsRequired();
+
+                    b.Property<long?>("GitId");
+
+                    b.Property<long?>("JobTimeout");
 
                     b.Property<int?>("LimitCpu");
 
@@ -318,25 +432,33 @@ namespace EFMigrationTool.Migrations
                         .IsRequired()
                         .HasMaxLength(128);
 
+                    b.Property<string>("NfsRoot");
+
+                    b.Property<string>("NfsServer");
+
+                    b.Property<long?>("RegistryId");
+
+                    b.Property<string>("StorageAccessKey");
+
                     b.Property<string>("StorageBucket");
 
-                    b.Property<long?>("StorageId");
+                    b.Property<string>("StorageSecretKey");
+
+                    b.Property<string>("StorageServer");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DefaultGitId");
-
-                    b.HasIndex("DefaultRegistryId");
+                    b.HasIndex("GitId");
 
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.HasIndex("StorageId");
+                    b.HasIndex("RegistryId");
 
                     b.ToTable("Tenants");
                 });
 
-            modelBuilder.Entity("Nssol.Platypus.Models.TenantGitMap", b =>
+            modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.AccessibleMenu", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd();
@@ -346,25 +468,84 @@ namespace EFMigrationTool.Migrations
                     b.Property<string>("CreatedBy")
                         .IsRequired();
 
-                    b.Property<long>("GitId");
-
-                    b.Property<bool>("IsEditable");
+                    b.Property<string>("MenuCode")
+                        .IsRequired();
 
                     b.Property<DateTime>("ModifiedAt");
 
                     b.Property<string>("ModifiedBy")
                         .IsRequired();
 
+                    b.Property<string>("RoleName")
+                        .IsRequired();
+
                     b.Property<long>("TenantId");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("GitId");
-
-                    b.HasIndex("TenantId", "GitId")
+                    b.HasIndex("TenantId", "MenuCode", "RoleName")
                         .IsUnique();
 
-                    b.ToTable("TenantGitMaps");
+                    b.ToTable("AccessibleMenus");
+                });
+
+            modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.Annotation", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime>("CreatedAt");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired();
+
+                    b.Property<string>("FileName")
+                        .IsRequired();
+
+                    b.Property<DateTime>("ModifiedAt");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsRequired();
+
+                    b.Property<string>("StoredPath")
+                        .IsRequired();
+
+                    b.Property<long>("TenantId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TenantId");
+
+                    b.ToTable("Annotations");
+                });
+
+            modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.AttachFile", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime>("CreatedAt");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired();
+
+                    b.Property<byte[]>("Data");
+
+                    b.Property<DateTime>("ModifiedAt");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsRequired();
+
+                    b.Property<string>("Name")
+                        .IsRequired();
+
+                    b.Property<long>("TenantId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TenantId");
+
+                    b.ToTable("AttachFiles");
                 });
 
             modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.Data", b =>
@@ -372,12 +553,20 @@ namespace EFMigrationTool.Migrations
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<long?>("AnnotationId");
+
+                    b.Property<string>("Attribute");
+
                     b.Property<DateTime>("CreatedAt");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired();
 
                     b.Property<long?>("DisplayId");
+
+                    b.Property<string>("FileName");
+
+                    b.Property<bool>("IsRaw");
 
                     b.Property<string>("Memo");
 
@@ -389,13 +578,11 @@ namespace EFMigrationTool.Migrations
                     b.Property<string>("Name")
                         .IsRequired();
 
-                    b.Property<long?>("ParentDataId");
+                    b.Property<string>("StoredPath");
 
                     b.Property<long>("TenantId");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ParentDataId");
 
                     b.HasIndex("TenantId");
 
@@ -442,7 +629,7 @@ namespace EFMigrationTool.Migrations
                     b.Property<string>("CreatedBy")
                         .IsRequired();
 
-                    b.Property<long?>("DataFileId");
+                    b.Property<long>("DataFileId");
 
                     b.Property<long>("DataId");
 
@@ -480,8 +667,6 @@ namespace EFMigrationTool.Migrations
                         .IsRequired();
 
                     b.Property<long?>("DisplayId");
-
-                    b.Property<bool>("IsLocked");
 
                     b.Property<string>("Memo");
 
@@ -599,23 +784,285 @@ namespace EFMigrationTool.Migrations
                     b.ToTable("DataTypes");
                 });
 
-            modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.InferenceHistory", b =>
+            modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.EvaluationHistory", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<string>("Argument")
+                        .IsRequired();
+
                     b.Property<DateTime?>("CompletedAt");
+
+                    b.Property<string>("Container")
+                        .IsRequired();
+
+                    b.Property<DateTime>("CreatedAt");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired();
+
+                    b.Property<long?>("DataSetId");
+
+                    b.Property<string>("EvalLogFileName");
+
+                    b.Property<string>("EvalLogStoredPath");
+
+                    b.Property<string>("EvalResultFileName");
+
+                    b.Property<string>("EvalResultStoredPath");
+
+                    b.Property<string>("GpuDriver");
+
+                    b.Property<string>("LogSummary");
+
+                    b.Property<string>("Memo");
+
+                    b.Property<string>("ModelCommitId")
+                        .IsRequired();
+
+                    b.Property<DateTime>("ModifiedAt");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsRequired();
+
+                    b.Property<long>("TenantId");
+
+                    b.Property<long>("TrainingHistoryId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DataSetId");
+
+                    b.HasIndex("TenantId");
+
+                    b.HasIndex("TrainingHistoryId");
+
+                    b.ToTable("EvaluationHistories");
+                });
+
+            modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.InputPersonalSetting", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime>("CreatedAt");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired();
+
+                    b.Property<long>("InputSettingId");
+
+                    b.Property<DateTime>("ModifiedAt");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsRequired();
+
+                    b.Property<string>("PrimaryFlag");
+
+                    b.Property<int?>("SortOrder");
+
+                    b.Property<long>("TenantId");
+
+                    b.Property<long>("UserId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("InputSettingId");
+
+                    b.HasIndex("TenantId", "InputSettingId", "UserId")
+                        .IsUnique();
+
+                    b.ToTable("InputPersonalSettings");
+                });
+
+            modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.InputSetting", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime>("CreatedAt");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired();
+
+                    b.Property<int?>("DefaultSortOrder");
+
+                    b.Property<string>("DisplayName")
+                        .IsRequired();
+
+                    b.Property<DateTime>("ModifiedAt");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsRequired();
+
+                    b.Property<long?>("RoleId");
+
+                    b.Property<string>("ShareType")
+                        .IsRequired();
+
+                    b.Property<string>("TargetType")
+                        .IsRequired();
+
+                    b.Property<long>("TenantId");
+
+                    b.Property<string>("UseType")
+                        .IsRequired();
+
+                    b.Property<long?>("UserId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TenantId");
+
+                    b.ToTable("InputSettings");
+                });
+
+            modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.InputSettingDetail", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime>("CreatedAt");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired();
+
+                    b.Property<long>("InputSettingId");
+
+                    b.Property<string>("ItemCode");
+
+                    b.Property<DateTime>("ModifiedAt");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsRequired();
+
+                    b.Property<int>("SeqNum");
+
+                    b.Property<long>("TenantId");
+
+                    b.Property<string>("Value1");
+
+                    b.Property<string>("Value2");
+
+                    b.Property<string>("Value3");
+
+                    b.Property<string>("Value4");
+
+                    b.Property<string>("Value5");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("InputSettingId");
+
+                    b.HasIndex("TenantId", "InputSettingId", "SeqNum")
+                        .IsUnique();
+
+                    b.ToTable("InputSettingDetails");
+                });
+
+            modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.ItemDef", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime>("CreatedAt");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired();
+
+                    b.Property<string>("DataType");
+
+                    b.Property<string>("DefaultValue1");
+
+                    b.Property<string>("DefaultValue2");
+
+                    b.Property<string>("DefaultValue3");
+
+                    b.Property<string>("DefaultValue4");
+
+                    b.Property<string>("DefaultValue5");
+
+                    b.Property<int?>("Digit");
+
+                    b.Property<int?>("DisplayWidth");
+
+                    b.Property<string>("GroupId");
+
+                    b.Property<string>("ItemCode")
+                        .IsRequired();
+
+                    b.Property<string>("ItemName");
+
+                    b.Property<string>("Locale")
+                        .IsRequired();
+
+                    b.Property<string>("MaxValue");
+
+                    b.Property<string>("MinValue");
+
+                    b.Property<DateTime>("ModifiedAt");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsRequired();
+
+                    b.Property<string>("Required");
+
+                    b.Property<long>("TenantId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TenantId", "ItemCode", "Locale")
+                        .IsUnique();
+
+                    b.ToTable("ItemDefs");
+                });
+
+            modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.Job", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("AllArgument1");
+
+                    b.Property<string>("AllArgument2");
+
+                    b.Property<string>("AllArgument3");
+
+                    b.Property<string>("AllArgument4");
+
+                    b.Property<string>("AllArgument5");
+
+                    b.Property<string>("Argument1");
+
+                    b.Property<string>("Argument2");
+
+                    b.Property<string>("Argument3");
+
+                    b.Property<string>("Argument4");
+
+                    b.Property<string>("Argument5");
+
+                    b.Property<string>("AssignedPort1");
+
+                    b.Property<string>("AssignedPort2");
+
+                    b.Property<string>("AssignedPort3");
+
+                    b.Property<string>("AssignedPort4");
+
+                    b.Property<string>("AssignedPort5");
+
+                    b.Property<string>("ConfigType");
 
                     b.Property<string>("Configuration");
 
-                    b.Property<string>("ContainerImage")
+                    b.Property<string>("Container")
                         .IsRequired();
 
-                    b.Property<long?>("ContainerRegistryId")
-                        .IsRequired();
+                    b.Property<string>("ContainerStdErrStoredPath");
 
-                    b.Property<string>("ContainerTag")
-                        .IsRequired();
+                    b.Property<string>("ContainerStdOutStoredPath");
 
                     b.Property<int>("Cpu");
 
@@ -624,36 +1071,56 @@ namespace EFMigrationTool.Migrations
                     b.Property<string>("CreatedBy")
                         .IsRequired();
 
-                    b.Property<long>("DataSetId");
+                    b.Property<DateTime?>("EndAt");
 
-                    b.Property<long?>("DisplayId");
+                    b.Property<string>("EntryPoint1");
 
-                    b.Property<string>("EntryPoint")
+                    b.Property<string>("EntryPoint2");
+
+                    b.Property<string>("EntryPoint3");
+
+                    b.Property<string>("EntryPoint4");
+
+                    b.Property<string>("EntryPoint5");
+
+                    b.Property<long>("ExecUserId");
+
+                    b.Property<string>("ExecUserName")
                         .IsRequired();
-
-                    b.Property<bool>("Favorite");
 
                     b.Property<int>("Gpu");
 
+                    b.Property<string>("GpuDriver");
+
+                    b.Property<string>("Group");
+
+                    b.Property<string>("InParam1");
+
+                    b.Property<string>("InParam2");
+
+                    b.Property<string>("InParam3");
+
+                    b.Property<string>("InParam4");
+
+                    b.Property<string>("InParam5");
+
+                    b.Property<string>("InputDataType")
+                        .IsRequired();
+
+                    b.Property<string>("JobType")
+                        .IsRequired();
+
                     b.Property<string>("LogSummary");
+
+                    b.Property<string>("MailAddress");
+
+                    b.Property<string>("MailType");
 
                     b.Property<string>("Memo");
 
                     b.Property<int>("Memory");
 
-                    b.Property<string>("ModelBranch");
-
-                    b.Property<string>("ModelCommitId")
-                        .IsRequired();
-
-                    b.Property<long?>("ModelGitId")
-                        .IsRequired();
-
-                    b.Property<string>("ModelRepository")
-                        .IsRequired();
-
-                    b.Property<string>("ModelRepositoryOwner")
-                        .IsRequired();
+                    b.Property<string>("ModelCommitId");
 
                     b.Property<DateTime>("ModifiedAt");
 
@@ -663,35 +1130,118 @@ namespace EFMigrationTool.Migrations
                     b.Property<string>("Name")
                         .IsRequired();
 
-                    b.Property<string>("Node");
+                    b.Property<string>("NodeName");
 
-                    b.Property<string>("Options");
+                    b.Property<string>("OutParam1");
 
-                    b.Property<long?>("ParentId");
+                    b.Property<string>("OutParam10");
+
+                    b.Property<string>("OutParam2");
+
+                    b.Property<string>("OutParam3");
+
+                    b.Property<string>("OutParam4");
+
+                    b.Property<string>("OutParam5");
+
+                    b.Property<string>("OutParam6");
+
+                    b.Property<string>("OutParam7");
+
+                    b.Property<string>("OutParam8");
+
+                    b.Property<string>("OutParam9");
+
+                    b.Property<long?>("ParentJobId");
 
                     b.Property<string>("Partition");
 
-                    b.Property<DateTime?>("StartedAt");
+                    b.Property<long?>("PortId1");
+
+                    b.Property<long?>("PortId2");
+
+                    b.Property<long?>("PortId3");
+
+                    b.Property<long?>("PortId4");
+
+                    b.Property<long?>("PortId5");
+
+                    b.Property<long?>("PrevJobId");
+
+                    b.Property<string>("Repository");
+
+                    b.Property<DateTime?>("StartAt");
+
+                    b.Property<string>("StartUpType")
+                        .IsRequired();
 
                     b.Property<string>("Status")
                         .IsRequired();
 
+                    b.Property<DateTime?>("SubmitAt");
+
+                    b.Property<long?>("TaskId");
+
+                    b.Property<long?>("TaskNum");
+
+                    b.Property<string>("TaskType");
+
                     b.Property<long>("TenantId");
+
+                    b.Property<long?>("Timeout");
+
+                    b.Property<DateTime?>("TruncLogAt");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ContainerRegistryId");
+                    b.HasIndex("TenantId");
 
-                    b.HasIndex("DataSetId");
+                    b.ToTable("Jobs");
+                });
 
-                    b.HasIndex("ParentId");
+            modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.JobEvent", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<long>("Count");
+
+                    b.Property<DateTime>("CreatedAt");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired();
+
+                    b.Property<DateTime>("FirstTimestamp");
+
+                    b.Property<long>("JobId");
+
+                    b.Property<DateTime>("LastTimestamp");
+
+                    b.Property<string>("Message");
+
+                    b.Property<DateTime>("ModifiedAt");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsRequired();
+
+                    b.Property<string>("Reason");
+
+                    b.Property<long>("TenantId");
+
+                    b.Property<string>("Type");
+
+                    b.Property<string>("Uid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("JobId");
 
                     b.HasIndex("TenantId");
 
-                    b.ToTable("InferenceHistories");
+                    b.ToTable("JobEvents");
                 });
 
-            modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.InferenceHistoryAttachedFile", b =>
+            modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.LookUp", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd();
@@ -701,30 +1251,32 @@ namespace EFMigrationTool.Migrations
                     b.Property<string>("CreatedBy")
                         .IsRequired();
 
-                    b.Property<string>("FileName")
+                    b.Property<string>("GroupId")
                         .IsRequired();
 
-                    b.Property<long>("InferenceHistoryId");
+                    b.Property<string>("Locale")
+                        .IsRequired();
 
-                    b.Property<string>("Key");
+                    b.Property<string>("LookUpId")
+                        .IsRequired();
+
+                    b.Property<string>("LookUpName");
 
                     b.Property<DateTime>("ModifiedAt");
 
                     b.Property<string>("ModifiedBy")
                         .IsRequired();
 
-                    b.Property<string>("StoredPath")
-                        .IsRequired();
+                    b.Property<long>("SortOrder");
 
                     b.Property<long>("TenantId");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("InferenceHistoryId");
+                    b.HasIndex("TenantId", "GroupId", "LookUpId", "Locale")
+                        .IsUnique();
 
-                    b.HasIndex("TenantId");
-
-                    b.ToTable("InferenceHistoryAttachedFiles");
+                    b.ToTable("LookUps");
                 });
 
             modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.Preprocess", b =>
@@ -738,8 +1290,6 @@ namespace EFMigrationTool.Migrations
 
                     b.Property<string>("ContainerTag");
 
-                    b.Property<int>("Cpu");
-
                     b.Property<DateTime>("CreatedAt");
 
                     b.Property<string>("CreatedBy")
@@ -749,11 +1299,7 @@ namespace EFMigrationTool.Migrations
 
                     b.Property<string>("EntryPoint");
 
-                    b.Property<int>("Gpu");
-
                     b.Property<string>("Memo");
-
-                    b.Property<int>("Memory");
 
                     b.Property<DateTime>("ModifiedAt");
 
@@ -766,8 +1312,6 @@ namespace EFMigrationTool.Migrations
                     b.Property<string>("RepositoryBranch");
 
                     b.Property<string>("RepositoryCommitId");
-
-                    b.Property<long?>("RepositoryGitId");
 
                     b.Property<string>("RepositoryName");
 
@@ -784,74 +1328,30 @@ namespace EFMigrationTool.Migrations
                     b.ToTable("Preprocesses");
                 });
 
-            modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.PreprocessHistory", b =>
+            modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.PreprocessedImage", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<DateTime?>("CompletedAt");
+                    b.Property<string>("AnnotationFileName");
 
-                    b.Property<string>("ContainerIdentifier");
-
-                    b.Property<int?>("Cpu");
+                    b.Property<string>("AnnotationStoredPath");
 
                     b.Property<DateTime>("CreatedAt");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired();
 
-                    b.Property<int?>("Gpu");
+                    b.Property<string>("ImageFileName");
 
-                    b.Property<long>("InputDataId");
-
-                    b.Property<string>("Memo");
-
-                    b.Property<int?>("Memory");
+                    b.Property<string>("ImageStoredPath");
 
                     b.Property<DateTime>("ModifiedAt");
 
                     b.Property<string>("ModifiedBy")
                         .IsRequired();
 
-                    b.Property<string>("Options");
-
-                    b.Property<string>("Partition");
-
-                    b.Property<long?>("PreprocessId");
-
-                    b.Property<DateTime?>("StartedAt");
-
-                    b.Property<string>("Status");
-
-                    b.Property<long>("TenantId");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("InputDataId");
-
-                    b.HasIndex("PreprocessId");
-
-                    b.HasIndex("TenantId");
-
-                    b.ToTable("PreprocessHistories");
-                });
-
-            modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.PreprocessHistoryOutput", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<DateTime>("CreatedAt");
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired();
-
-                    b.Property<DateTime>("ModifiedAt");
-
-                    b.Property<string>("ModifiedBy")
-                        .IsRequired();
-
-                    b.Property<long>("OutputDataId");
+                    b.Property<long?>("OutputDataId");
 
                     b.Property<long>("PreprocessHistoryId");
 
@@ -866,6 +1366,238 @@ namespace EFMigrationTool.Migrations
                     b.HasIndex("TenantId");
 
                     b.ToTable("PreprocessHistoryOutputs");
+                });
+
+            modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.PreprocessHistory", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime?>("CompletedAt");
+
+                    b.Property<DateTime>("CreatedAt");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired();
+
+                    b.Property<long>("InputDataId");
+
+                    b.Property<string>("Memo");
+
+                    b.Property<DateTime>("ModifiedAt");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsRequired();
+
+                    b.Property<long?>("PreprocessId");
+
+                    b.Property<string>("Status");
+
+                    b.Property<long>("StatusId");
+
+                    b.Property<long>("TenantId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("InputDataId");
+
+                    b.HasIndex("PreprocessId");
+
+                    b.HasIndex("TenantId");
+
+                    b.ToTable("PreprocessHistories");
+                });
+
+            modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.SearchConditionDetail", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime>("CreatedAt");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired();
+
+                    b.Property<string>("ItemCode");
+
+                    b.Property<DateTime>("ModifiedAt");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsRequired();
+
+                    b.Property<long>("SearchSettingId");
+
+                    b.Property<string>("SearchType");
+
+                    b.Property<int>("SeqNum");
+
+                    b.Property<long>("TenantId");
+
+                    b.Property<string>("Value1");
+
+                    b.Property<string>("Value2");
+
+                    b.Property<string>("Value3");
+
+                    b.Property<string>("Value4");
+
+                    b.Property<string>("Value5");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SearchSettingId");
+
+                    b.HasIndex("TenantId", "SearchSettingId", "SeqNum")
+                        .IsUnique();
+
+                    b.ToTable("SearchConditionDetails");
+                });
+
+            modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.SearchPersonalSetting", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime>("CreatedAt");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired();
+
+                    b.Property<DateTime>("ModifiedAt");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsRequired();
+
+                    b.Property<string>("PrimaryFlag");
+
+                    b.Property<long>("SearchSettingId");
+
+                    b.Property<int?>("SortOrder");
+
+                    b.Property<long>("TenantId");
+
+                    b.Property<long>("UserId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SearchSettingId");
+
+                    b.HasIndex("TenantId", "SearchSettingId", "UserId")
+                        .IsUnique();
+
+                    b.ToTable("SearchPersonalSettings");
+                });
+
+            modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.SearchResultDetail", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime>("CreatedAt");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired();
+
+                    b.Property<string>("DisplayFlag");
+
+                    b.Property<string>("ItemCode");
+
+                    b.Property<DateTime>("ModifiedAt");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsRequired();
+
+                    b.Property<long>("SearchSettingId");
+
+                    b.Property<int>("SeqNum");
+
+                    b.Property<long>("TenantId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SearchSettingId");
+
+                    b.HasIndex("TenantId", "SearchSettingId", "SeqNum")
+                        .IsUnique();
+
+                    b.ToTable("SearchResultDetails");
+                });
+
+            modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.SearchSetting", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime>("CreatedAt");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired();
+
+                    b.Property<string>("DisplayName")
+                        .IsRequired();
+
+                    b.Property<string>("FirstSortItem");
+
+                    b.Property<string>("FirstSortType");
+
+                    b.Property<int>("LineNumber");
+
+                    b.Property<DateTime>("ModifiedAt");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsRequired();
+
+                    b.Property<long?>("RoleId");
+
+                    b.Property<string>("SecondSortItem");
+
+                    b.Property<string>("SecondSortType");
+
+                    b.Property<string>("ShareType")
+                        .IsRequired();
+
+                    b.Property<string>("TargetType")
+                        .IsRequired();
+
+                    b.Property<long>("TenantId");
+
+                    b.Property<string>("UseType")
+                        .IsRequired();
+
+                    b.Property<long?>("UserId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TenantId");
+
+                    b.ToTable("SearchSettings");
+                });
+
+            modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.Status", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime>("CreatedAt");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired();
+
+                    b.Property<DateTime>("ModifiedAt");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsRequired();
+
+                    b.Property<string>("Name")
+                        .IsRequired();
+
+                    b.Property<long>("TenantId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TenantId");
+
+                    b.ToTable("Statuses");
                 });
 
             modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.Tag", b =>
@@ -915,7 +1647,9 @@ namespace EFMigrationTool.Migrations
                     b.Property<string>("Name")
                         .IsRequired();
 
-                    b.Property<int?>("PortNo");
+                    b.Property<long>("PortId");
+
+                    b.Property<int>("PortNo");
 
                     b.Property<DateTime>("StartedAt");
 
@@ -947,11 +1681,13 @@ namespace EFMigrationTool.Migrations
                     b.Property<string>("ContainerImage")
                         .IsRequired();
 
-                    b.Property<long?>("ContainerRegistryId")
-                        .IsRequired();
+                    b.Property<long?>("ContainerRegistryId");
 
-                    b.Property<string>("ContainerTag")
-                        .IsRequired();
+                    b.Property<string>("ContainerStdErrStoredPath");
+
+                    b.Property<string>("ContainerStdOutStoredPath");
+
+                    b.Property<string>("ContainerTag");
 
                     b.Property<int>("Cpu");
 
@@ -964,12 +1700,13 @@ namespace EFMigrationTool.Migrations
 
                     b.Property<long?>("DisplayId");
 
-                    b.Property<string>("EntryPoint")
-                        .IsRequired();
+                    b.Property<string>("EntryPoint");
 
-                    b.Property<bool>("Favorite");
+                    b.Property<string>("EvalArgument");
 
                     b.Property<int>("Gpu");
+
+                    b.Property<string>("GpuDriver");
 
                     b.Property<string>("LogSummary");
 
@@ -979,26 +1716,18 @@ namespace EFMigrationTool.Migrations
 
                     b.Property<string>("ModelBranch");
 
-                    b.Property<string>("ModelCommitId")
-                        .IsRequired();
+                    b.Property<string>("ModelCommitId");
 
-                    b.Property<long>("ModelGitId");
+                    b.Property<string>("ModelRepository");
 
-                    b.Property<string>("ModelRepository")
-                        .IsRequired();
-
-                    b.Property<string>("ModelRepositoryOwner")
-                        .IsRequired();
+                    b.Property<string>("ModelRepositoryOwner");
 
                     b.Property<DateTime>("ModifiedAt");
 
                     b.Property<string>("ModifiedBy")
                         .IsRequired();
 
-                    b.Property<string>("Name")
-                        .IsRequired();
-
-                    b.Property<string>("Node");
+                    b.Property<string>("Name");
 
                     b.Property<string>("Options");
 
@@ -1006,12 +1735,29 @@ namespace EFMigrationTool.Migrations
 
                     b.Property<string>("Partition");
 
-                    b.Property<DateTime?>("StartedAt");
+                    b.Property<long?>("PreprocessId");
 
-                    b.Property<string>("Status")
-                        .IsRequired();
+                    b.Property<string>("Status");
 
                     b.Property<long>("TenantId");
+
+                    b.Property<string>("TestLogFileName");
+
+                    b.Property<string>("TestLogStoredPath");
+
+                    b.Property<string>("TrainArgument");
+
+                    b.Property<string>("TrainLogFileName");
+
+                    b.Property<string>("TrainLogStoredPath");
+
+                    b.Property<string>("TrainedParameterFileName");
+
+                    b.Property<string>("TrainedParameterStoredPath");
+
+                    b.Property<bool>("UseParentAsPreTrain");
+
+                    b.Property<string>("User");
 
                     b.HasKey("Id");
 
@@ -1020,6 +1766,8 @@ namespace EFMigrationTool.Migrations
                     b.HasIndex("DataSetId");
 
                     b.HasIndex("ParentId");
+
+                    b.HasIndex("PreprocessId");
 
                     b.HasIndex("TenantId");
 
@@ -1094,50 +1842,17 @@ namespace EFMigrationTool.Migrations
                     b.ToTable("TrainingHistoryTagMaps");
                 });
 
-            modelBuilder.Entity("Nssol.Platypus.Models.TenantRegistryMap", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<DateTime>("CreatedAt");
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired();
-
-                    b.Property<bool>("IsEditable");
-
-                    b.Property<DateTime>("ModifiedAt");
-
-                    b.Property<string>("ModifiedBy")
-                        .IsRequired();
-
-                    b.Property<long>("RegistryId");
-
-                    b.Property<long>("TenantId");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RegistryId");
-
-                    b.HasIndex("TenantId", "RegistryId")
-                        .IsUnique();
-
-                    b.ToTable("TenantRegistryMaps");
-                });
-
             modelBuilder.Entity("Nssol.Platypus.Models.User", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("Alias");
-
                     b.Property<DateTime>("CreatedAt");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired();
 
-                    b.Property<long>("DefaultTenantId");
+                    b.Property<long?>("DefaultTenantId");
 
                     b.Property<DateTime>("ModifiedAt");
 
@@ -1185,41 +1900,9 @@ namespace EFMigrationTool.Migrations
 
                     b.HasIndex("TenantMapId");
 
-                    b.HasIndex("UserId", "RoleId", "TenantMapId")
-                        .IsUnique();
+                    b.HasIndex("UserId");
 
                     b.ToTable("UserRoleMaps");
-                });
-
-            modelBuilder.Entity("Nssol.Platypus.Models.UserTenantGitMap", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<DateTime>("CreatedAt");
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired();
-
-                    b.Property<string>("GitToken");
-
-                    b.Property<DateTime>("ModifiedAt");
-
-                    b.Property<string>("ModifiedBy")
-                        .IsRequired();
-
-                    b.Property<long>("TenantGitMapId");
-
-                    b.Property<long>("UserId");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TenantGitMapId");
-
-                    b.HasIndex("UserId", "TenantGitMapId")
-                        .IsUnique();
-
-                    b.ToTable("UserTenantGitMaps");
                 });
 
             modelBuilder.Entity("Nssol.Platypus.Models.UserTenantMap", b =>
@@ -1253,37 +1936,17 @@ namespace EFMigrationTool.Migrations
                     b.ToTable("UserTenantMaps");
                 });
 
-            modelBuilder.Entity("Nssol.Platypus.Models.UserTenantRegistryMap", b =>
+            modelBuilder.Entity("Nssol.Platypus.Models.ClusterToken", b =>
                 {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd();
+                    b.HasOne("Nssol.Platypus.Models.Tenant", "Tenant")
+                        .WithMany()
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
-                    b.Property<DateTime>("CreatedAt");
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired();
-
-                    b.Property<DateTime>("ModifiedAt");
-
-                    b.Property<string>("ModifiedBy")
-                        .IsRequired();
-
-                    b.Property<string>("RegistryPassword");
-
-                    b.Property<string>("RegistryUserName");
-
-                    b.Property<long>("TenantRegistryMapId");
-
-                    b.Property<long>("UserId");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TenantRegistryMapId");
-
-                    b.HasIndex("UserId", "TenantRegistryMapId")
-                        .IsUnique();
-
-                    b.ToTable("UserTenantRegistryMaps");
+                    b.HasOne("Nssol.Platypus.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Nssol.Platypus.Models.MenuRoleMap", b =>
@@ -1311,46 +1974,62 @@ namespace EFMigrationTool.Migrations
                 {
                     b.HasOne("Nssol.Platypus.Models.Tenant", "Tenant")
                         .WithMany()
-                        .HasForeignKey("TenantId")
+                        .HasForeignKey("TenantId");
+                });
+
+            modelBuilder.Entity("Nssol.Platypus.Models.RoleDetail", b =>
+                {
+                    b.HasOne("Nssol.Platypus.Models.Role", "Role")
+                        .WithMany()
+                        .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Nssol.Platypus.Models.Tenant", "Tenant")
+                        .WithMany()
+                        .HasForeignKey("TenantId");
+
+                    b.HasOne("Nssol.Platypus.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("Nssol.Platypus.Models.Tenant", b =>
                 {
-                    b.HasOne("Nssol.Platypus.Models.Git", "DefaultGit")
-                        .WithMany()
-                        .HasForeignKey("DefaultGitId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("Nssol.Platypus.Models.Registry", "DefaultRegistry")
-                        .WithMany()
-                        .HasForeignKey("DefaultRegistryId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("Nssol.Platypus.Models.Storage", "Storage")
-                        .WithMany()
-                        .HasForeignKey("StorageId");
-                });
-
-            modelBuilder.Entity("Nssol.Platypus.Models.TenantGitMap", b =>
-                {
                     b.HasOne("Nssol.Platypus.Models.Git", "Git")
                         .WithMany()
-                        .HasForeignKey("GitId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("GitId");
 
+                    b.HasOne("Nssol.Platypus.Models.Registry", "Registry")
+                        .WithMany()
+                        .HasForeignKey("RegistryId");
+                });
+
+            modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.AccessibleMenu", b =>
+                {
                     b.HasOne("Nssol.Platypus.Models.Tenant", "Tenant")
-                        .WithMany("GitMaps")
+                        .WithMany()
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.Annotation", b =>
+                {
+                    b.HasOne("Nssol.Platypus.Models.Tenant", "Tenant")
+                        .WithMany()
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.AttachFile", b =>
+                {
+                    b.HasOne("Nssol.Platypus.Models.Tenant", "Tenant")
+                        .WithMany()
                         .HasForeignKey("TenantId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.Data", b =>
                 {
-                    b.HasOne("Nssol.Platypus.Models.TenantModels.Data", "Parent")
-                        .WithMany()
-                        .HasForeignKey("ParentDataId");
-
                     b.HasOne("Nssol.Platypus.Models.Tenant", "Tenant")
                         .WithMany()
                         .HasForeignKey("TenantId")
@@ -1369,10 +2048,11 @@ namespace EFMigrationTool.Migrations
                 {
                     b.HasOne("Nssol.Platypus.Models.TenantModels.DataFile", "DataFile")
                         .WithMany()
-                        .HasForeignKey("DataFileId");
+                        .HasForeignKey("DataFileId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Nssol.Platypus.Models.TenantModels.Data", "Data")
-                        .WithMany("DataProperties")
+                        .WithMany()
                         .HasForeignKey("DataId")
                         .OnDelete(DeleteBehavior.Cascade);
 
@@ -1421,7 +2101,7 @@ namespace EFMigrationTool.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Nssol.Platypus.Models.TenantModels.Tag", "Tag")
-                        .WithMany("DataMaps")
+                        .WithMany()
                         .HasForeignKey("TagId")
                         .OnDelete(DeleteBehavior.Cascade);
 
@@ -1439,21 +2119,29 @@ namespace EFMigrationTool.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.InferenceHistory", b =>
+            modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.EvaluationHistory", b =>
                 {
-                    b.HasOne("Nssol.Platypus.Models.Registry", "ContainerRegistry")
-                        .WithMany()
-                        .HasForeignKey("ContainerRegistryId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
                     b.HasOne("Nssol.Platypus.Models.TenantModels.DataSet", "DataSet")
                         .WithMany()
-                        .HasForeignKey("DataSetId")
+                        .HasForeignKey("DataSetId");
+
+                    b.HasOne("Nssol.Platypus.Models.Tenant", "Tenant")
+                        .WithMany()
+                        .HasForeignKey("TenantId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("Nssol.Platypus.Models.TenantModels.TrainingHistory", "Parent")
+                    b.HasOne("Nssol.Platypus.Models.TenantModels.TrainingHistory", "TrainingHistory")
                         .WithMany()
-                        .HasForeignKey("ParentId");
+                        .HasForeignKey("TrainingHistoryId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.InputPersonalSetting", b =>
+                {
+                    b.HasOne("Nssol.Platypus.Models.TenantModels.InputSetting", "InputSetting")
+                        .WithMany()
+                        .HasForeignKey("InputSettingId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Nssol.Platypus.Models.Tenant", "Tenant")
                         .WithMany()
@@ -1461,13 +2149,58 @@ namespace EFMigrationTool.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.InferenceHistoryAttachedFile", b =>
+            modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.InputSetting", b =>
                 {
-                    b.HasOne("Nssol.Platypus.Models.TenantModels.InferenceHistory", "InferenceHistory")
-                        .WithMany("InferenceHistoryAttachedFile")
-                        .HasForeignKey("InferenceHistoryId")
+                    b.HasOne("Nssol.Platypus.Models.Tenant", "Tenant")
+                        .WithMany()
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.InputSettingDetail", b =>
+                {
+                    b.HasOne("Nssol.Platypus.Models.TenantModels.InputSetting", "InputSetting")
+                        .WithMany()
+                        .HasForeignKey("InputSettingId")
                         .OnDelete(DeleteBehavior.Cascade);
 
+                    b.HasOne("Nssol.Platypus.Models.Tenant", "Tenant")
+                        .WithMany()
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.ItemDef", b =>
+                {
+                    b.HasOne("Nssol.Platypus.Models.Tenant", "Tenant")
+                        .WithMany()
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.Job", b =>
+                {
+                    b.HasOne("Nssol.Platypus.Models.Tenant", "Tenant")
+                        .WithMany()
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.JobEvent", b =>
+                {
+                    b.HasOne("Nssol.Platypus.Models.TenantModels.Job", "Job")
+                        .WithMany()
+                        .HasForeignKey("JobId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Nssol.Platypus.Models.Tenant", "Tenant")
+                        .WithMany()
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.LookUp", b =>
+                {
                     b.HasOne("Nssol.Platypus.Models.Tenant", "Tenant")
                         .WithMany()
                         .HasForeignKey("TenantId")
@@ -1479,6 +2212,23 @@ namespace EFMigrationTool.Migrations
                     b.HasOne("Nssol.Platypus.Models.Registry", "ContainerRegistry")
                         .WithMany()
                         .HasForeignKey("ContainerRegistryId");
+
+                    b.HasOne("Nssol.Platypus.Models.Tenant", "Tenant")
+                        .WithMany()
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.PreprocessedImage", b =>
+                {
+                    b.HasOne("Nssol.Platypus.Models.TenantModels.Data", "OutputData")
+                        .WithMany()
+                        .HasForeignKey("OutputDataId");
+
+                    b.HasOne("Nssol.Platypus.Models.TenantModels.PreprocessHistory", "PreprocessHistory")
+                        .WithMany("PreprocessHistoryOutputs")
+                        .HasForeignKey("PreprocessHistoryId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Nssol.Platypus.Models.Tenant", "Tenant")
                         .WithMany()
@@ -1503,18 +2253,55 @@ namespace EFMigrationTool.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.PreprocessHistoryOutput", b =>
+            modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.SearchConditionDetail", b =>
                 {
-                    b.HasOne("Nssol.Platypus.Models.TenantModels.Data", "OutputData")
+                    b.HasOne("Nssol.Platypus.Models.TenantModels.SearchSetting", "SearchSetting")
                         .WithMany()
-                        .HasForeignKey("OutputDataId")
+                        .HasForeignKey("SearchSettingId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("Nssol.Platypus.Models.TenantModels.PreprocessHistory", "PreprocessHistory")
-                        .WithMany("PreprocessHistoryOutputs")
-                        .HasForeignKey("PreprocessHistoryId")
+                    b.HasOne("Nssol.Platypus.Models.Tenant", "Tenant")
+                        .WithMany()
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.SearchPersonalSetting", b =>
+                {
+                    b.HasOne("Nssol.Platypus.Models.TenantModels.SearchSetting", "SearchSetting")
+                        .WithMany()
+                        .HasForeignKey("SearchSettingId")
                         .OnDelete(DeleteBehavior.Cascade);
 
+                    b.HasOne("Nssol.Platypus.Models.Tenant", "Tenant")
+                        .WithMany()
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.SearchResultDetail", b =>
+                {
+                    b.HasOne("Nssol.Platypus.Models.TenantModels.SearchSetting", "SearchSetting")
+                        .WithMany()
+                        .HasForeignKey("SearchSettingId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Nssol.Platypus.Models.Tenant", "Tenant")
+                        .WithMany()
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.SearchSetting", b =>
+                {
+                    b.HasOne("Nssol.Platypus.Models.Tenant", "Tenant")
+                        .WithMany()
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.Status", b =>
+                {
                     b.HasOne("Nssol.Platypus.Models.Tenant", "Tenant")
                         .WithMany()
                         .HasForeignKey("TenantId")
@@ -1546,8 +2333,7 @@ namespace EFMigrationTool.Migrations
                 {
                     b.HasOne("Nssol.Platypus.Models.Registry", "ContainerRegistry")
                         .WithMany()
-                        .HasForeignKey("ContainerRegistryId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("ContainerRegistryId");
 
                     b.HasOne("Nssol.Platypus.Models.TenantModels.DataSet", "DataSet")
                         .WithMany()
@@ -1557,6 +2343,10 @@ namespace EFMigrationTool.Migrations
                     b.HasOne("Nssol.Platypus.Models.TenantModels.TrainingHistory", "Parent")
                         .WithMany()
                         .HasForeignKey("ParentId");
+
+                    b.HasOne("Nssol.Platypus.Models.TenantModels.Preprocess", "Preprocess")
+                        .WithMany()
+                        .HasForeignKey("PreprocessId");
 
                     b.HasOne("Nssol.Platypus.Models.Tenant", "Tenant")
                         .WithMany()
@@ -1595,25 +2385,11 @@ namespace EFMigrationTool.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Nssol.Platypus.Models.TenantRegistryMap", b =>
-                {
-                    b.HasOne("Nssol.Platypus.Models.Registry", "Registry")
-                        .WithMany()
-                        .HasForeignKey("RegistryId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("Nssol.Platypus.Models.Tenant", "Tenant")
-                        .WithMany("RegistryMaps")
-                        .HasForeignKey("TenantId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
             modelBuilder.Entity("Nssol.Platypus.Models.User", b =>
                 {
                     b.HasOne("Nssol.Platypus.Models.Tenant", "DefaultTenant")
                         .WithMany()
-                        .HasForeignKey("DefaultTenantId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .HasForeignKey("DefaultTenantId");
                 });
 
             modelBuilder.Entity("Nssol.Platypus.Models.UserRoleMap", b =>
@@ -1633,19 +2409,6 @@ namespace EFMigrationTool.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Nssol.Platypus.Models.UserTenantGitMap", b =>
-                {
-                    b.HasOne("Nssol.Platypus.Models.TenantGitMap", "TenantGitMap")
-                        .WithMany()
-                        .HasForeignKey("TenantGitMapId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("Nssol.Platypus.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
             modelBuilder.Entity("Nssol.Platypus.Models.UserTenantMap", b =>
                 {
                     b.HasOne("Nssol.Platypus.Models.Tenant", "Tenant")
@@ -1655,19 +2418,6 @@ namespace EFMigrationTool.Migrations
 
                     b.HasOne("Nssol.Platypus.Models.User", "User")
                         .WithMany("TenantMaps")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("Nssol.Platypus.Models.UserTenantRegistryMap", b =>
-                {
-                    b.HasOne("Nssol.Platypus.Models.TenantRegistryMap", "TenantRegistryMap")
-                        .WithMany()
-                        .HasForeignKey("TenantRegistryMapId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("Nssol.Platypus.Models.User", "User")
-                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
