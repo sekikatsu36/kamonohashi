@@ -1,4 +1,13 @@
-﻿ALTER TABLE "InferenceHistory" DROP CONSTRAINT "FK_InferenceHistory_Registries_ContainerRegistryId";
+﻿
+-- Tenant.StorageBucketをTenant.Nameで埋める
+
+UPDATE "Tenants"
+set "StorageBucket" = "Name"
+where "StorageBucket" is null or "StorageBucket" = '';
+
+-- Migrationの実行
+
+ALTER TABLE "InferenceHistory" DROP CONSTRAINT "FK_InferenceHistory_Registries_ContainerRegistryId";
 
 ALTER TABLE "InferenceHistory" DROP CONSTRAINT "FK_InferenceHistory_DataSets_DataSetId";
 
@@ -131,6 +140,9 @@ ALTER TABLE "Tenants" ADD CONSTRAINT "FK_Tenants_Registries_DefaultRegistryId" F
 
 ALTER TABLE "TrainingHistories" ADD CONSTRAINT "FK_TrainingHistories_Registries_ContainerRegistryId" FOREIGN KEY ("ContainerRegistryId") REFERENCES "Registries" ("Id") ON DELETE CASCADE;
 
-INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-VALUES ('20190618031602_UpdateForPrivateVer', '2.1.4-rtm-31024');
+
+-- Migrationテーブルの修正
+
+delete from "__EFMigrationsHistory";
+insert into "__EFMigrationsHistory" values ('20190515093033_v1.0.0', '2.1.8-servicing-32085');
 
